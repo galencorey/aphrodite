@@ -1,6 +1,6 @@
-import asap from 'asap';
-import { assert } from 'chai';
-import { JSDOM } from 'jsdom';
+import asap from "asap";
+import { assert } from "chai";
+import { JSDOM } from "jsdom";
 
 import {
   StyleSheet,
@@ -8,13 +8,13 @@ import {
   StyleSheetTestUtils,
   minify,
   css
-} from '../src/index.js';
-import { reset } from '../src/inject.js';
-import { getSheetText } from './testUtils.js';
+} from "../src/index.js";
+import { reset } from "../src/inject.js";
+import { getSheetText } from "./testUtils.js";
 
-describe('css', () => {
+describe("css", () => {
     beforeEach(() => {
-        global.document = new JSDOM('').window.document;
+        global.document = new JSDOM("").window.document;
         reset();
     });
 
@@ -23,39 +23,39 @@ describe('css', () => {
         global.document = undefined;
     });
 
-    it('generates class names', () => {
+    it("generates class names", () => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red"
             },
 
             blue: {
-                color: 'blue'
+                color: "blue"
             }
         });
 
         assert.ok(css(sheet.red, sheet.blue));
     });
 
-    it('filters out falsy inputs', () => {
+    it("filters out falsy inputs", () => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
-            },
+                color: "red"
+            }
         });
 
         assert.equal(css(sheet.red), css(sheet.red, false));
         assert.equal(css(sheet.red), css(false, sheet.red));
     });
 
-    it('accepts arrays of styles', () => {
+    it("accepts arrays of styles", () => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red"
             },
 
             blue: {
-                color: 'blue'
+                color: "blue"
             }
         });
 
@@ -65,16 +65,16 @@ describe('css', () => {
         assert.equal(css(sheet.red), css(false, [null, false, sheet.red]));
     });
 
-    it('succeeds for with empty args', () => {
+    it("succeeds for with empty args", () => {
         assert(css() != null);
         assert(css(false) != null);
     });
 
-    it('adds styles to the DOM', done => {
+    it("adds styles to the DOM", done => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
-            },
+                color: "red"
+            }
         });
 
         css(sheet.red);
@@ -90,14 +90,14 @@ describe('css', () => {
         });
     });
 
-    it('only ever creates one style tag', done => {
+    it("only ever creates one style tag", done => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red"
             },
             blue: {
-                color: 'blue',
-            },
+                color: "blue"
+            }
         });
 
         css(sheet.red);
@@ -116,18 +116,18 @@ describe('css', () => {
         });
     });
 
-    it('automatically uses a style tag with the data-aphrodite attribute', done => {
+    it("automatically uses a style tag with the data-aphrodite attribute", done => {
         const style = document.createElement("style");
         style.setAttribute("data-aphrodite", "");
         document.head.appendChild(style);
 
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red"
             },
             blue: {
-                color: 'blue',
-            },
+                color: "blue"
+            }
         });
 
         css(sheet.red);
@@ -138,21 +138,25 @@ describe('css', () => {
             const styles = getSheetText(styleTags[0].sheet);
 
             assert.include(styles, `${sheet.red._name} {`);
-            assert.include(styles, 'color: red');
+            assert.include(styles, "color: red");
 
             done();
         });
     });
+
+    it("throws a useful error for invalid arguments", () => {
+        assert.throws(() => css({ color: "red" }), "Invalid Style Definition");
+    });
 });
 
-describe('StyleSheet.create', () => {
-    it('assigns a name to stylesheet properties', () => {
+describe("StyleSheet.create", () => {
+    it("assigns a name to stylesheet properties", () => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red"
             },
             blue: {
-                color: 'blue'
+                color: "blue"
             }
         });
 
@@ -161,67 +165,67 @@ describe('StyleSheet.create', () => {
         assert.notEqual(sheet.red._name, sheet.blue._name);
     });
 
-    it('assign different names to two different create calls', () => {
+    it("assign different names to two different create calls", () => {
         const sheet1 = StyleSheet.create({
             red: {
-                color: 'blue',
-            },
+                color: "blue"
+            }
         });
 
         const sheet2 = StyleSheet.create({
             red: {
-                color: 'red',
-            },
+                color: "red"
+            }
         });
 
         assert.notEqual(sheet1.red._name, sheet2.red._name);
     });
 
-    it('assigns the same name to identical styles from different create calls', () => {
+    it("assigns the same name to identical styles from different create calls", () => {
         const sheet1 = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red",
                 height: 20,
 
-                ':hover': {
-                    color: 'blue',
-                    width: 40,
-                },
-            },
+                ":hover": {
+                    color: "blue",
+                    width: 40
+                }
+            }
         });
 
         const sheet2 = StyleSheet.create({
             red: {
-                color: 'red',
+                color: "red",
                 height: 20,
 
-                ':hover': {
-                    color: 'blue',
-                    width: 40,
-                },
-            },
+                ":hover": {
+                    color: "blue",
+                    width: 40
+                }
+            }
         });
 
         assert.equal(sheet1.red._name, sheet2.red._name);
     });
 
-    it('hashes style names correctly', () => {
+    it("hashes style names correctly", () => {
         const sheet = StyleSheet.create({
             test: {
-                color: 'red',
+                color: "red",
                 height: 20,
 
-                ':hover': {
-                    color: 'blue',
-                    width: 40,
-                },
-            },
+                ":hover": {
+                    color: "blue",
+                    width: 40
+                }
+            }
         });
 
-        assert.equal(sheet.test._name, 'test_j5rvvh');
+        assert.equal(sheet.test._name, "test_j5rvvh");
     });
 
-    it('works for empty stylesheets and styles', () => {
+    it("works for empty stylesheets and styles", () => {
         const emptySheet = StyleSheet.create({});
 
         assert.ok(emptySheet);
@@ -234,8 +238,8 @@ describe('StyleSheet.create', () => {
     });
 });
 
-describe('minify', () => {
-    describe('true', () => {
+describe("minify", () => {
+    describe("true", () => {
         beforeEach(() => {
             minify(true);
         });
@@ -244,24 +248,24 @@ describe('minify', () => {
             minify(undefined);
         });
 
-        it('minifies style names', () => {
+        it("minifies style names", () => {
             const sheet = StyleSheet.create({
                 test: {
-                    color: 'red',
+                    color: "red",
                     height: 20,
 
-                    ':hover': {
-                        color: 'blue',
-                        width: 40,
-                    },
-                },
+                    ":hover": {
+                        color: "blue",
+                        width: 40
+                    }
+                }
             });
 
-            assert.equal(sheet.test._name, 'j5rvvh');
+            assert.equal(sheet.test._name, "j5rvvh");
         });
-    })
+    });
 
-    describe('false', () => {
+    describe("false", () => {
         beforeEach(() => {
             minify(false);
         });
@@ -270,43 +274,43 @@ describe('minify', () => {
             minify(undefined);
         });
 
-        it('does not minifies style names', () => {
+        it("does not minifies style names", () => {
             const sheet = StyleSheet.create({
                 test: {
-                    color: 'red',
+                    color: "red",
                     height: 20,
 
-                    ':hover': {
-                        color: 'blue',
-                        width: 40,
-                    },
-                },
+                    ":hover": {
+                        color: "blue",
+                        width: 40
+                    }
+                }
             });
 
-            assert.equal(sheet.test._name, 'test_j5rvvh');
+            assert.equal(sheet.test._name, "test_j5rvvh");
         });
 
-        it('does not minifies style names, even with process.env.NODE_ENV === \'production\'', () => {
+        it("does not minifies style names, even with process.env.NODE_ENV === 'production'", () => {
             const sheet = StyleSheet.create({
                 test: {
-                    color: 'red',
+                    color: "red",
                     height: 20,
 
-                    ':hover': {
-                        color: 'blue',
-                        width: 40,
-                    },
-                },
+                    ":hover": {
+                        color: "blue",
+                        width: 40
+                    }
+                }
             });
 
-            assert.equal(sheet.test._name, 'test_j5rvvh');
+            assert.equal(sheet.test._name, "test_j5rvvh");
         });
-    })
+    });
 });
 
-describe('rehydrate', () => {
+describe("rehydrate", () => {
     beforeEach(() => {
-        global.document = new JSDOM('').window.document;
+        global.document = new JSDOM("").window.document;
         reset();
     });
 
@@ -317,19 +321,19 @@ describe('rehydrate', () => {
 
     const sheet = StyleSheet.create({
         red: {
-            color: 'red',
+            color: "red"
         },
 
         blue: {
-            color: 'blue',
+            color: "blue"
         },
 
         green: {
-            color: 'green',
-        },
+            color: "green"
+        }
     });
 
-    it('doesn\'t render styles in the renderedClassNames arg', done => {
+    it("doesn't render styles in the renderedClassNames arg", done => {
         StyleSheet.rehydrate([sheet.red._name, sheet.blue._name]);
 
         css(sheet.red);
@@ -352,14 +356,14 @@ describe('rehydrate', () => {
         });
     });
 
-    it('doesn\'t fail with no argument passed in', () => {
+    it("doesn't fail with no argument passed in", () => {
         StyleSheet.rehydrate();
     });
 });
 
-describe('StyleSheet.extend', () => {
+describe("StyleSheet.extend", () => {
     beforeEach(() => {
-        global.document = new JSDOM('').window.document;
+        global.document = new JSDOM("").window.document;
         reset();
     });
 
@@ -368,42 +372,45 @@ describe('StyleSheet.extend', () => {
         global.document = undefined;
     });
 
-    it('accepts empty extensions', () => {
+    it("accepts empty extensions", () => {
         const newAphrodite = StyleSheet.extend([]);
 
         assert(newAphrodite.css);
         assert(newAphrodite.StyleSheet);
     });
 
-    it('uses a new selector handler', done => {
-        const descendantHandler = (selector, baseSelector,
-                                   generateSubtreeStyles) => {
-            if (selector[0] !== '^') {
+    it("uses a new selector handler", done => {
+        const descendantHandler = (
+      selector,
+      baseSelector,
+      generateSubtreeStyles
+    ) => {
+            if (selector[0] !== "^") {
                 return null;
             }
-            return generateSubtreeStyles(
-                `.${selector.slice(1)} ${baseSelector}`);
+            return generateSubtreeStyles(`.${selector.slice(1)} ${baseSelector}`);
         };
 
         const descendantHandlerExtension = {
-            selectorHandler: descendantHandler,
+            selectorHandler: descendantHandler
         };
 
-        // Pull out the new StyleSheet/css functions to use for the rest of
-        // this test.
-        const {StyleSheet: newStyleSheet, css: newCss} = StyleSheet.extend([
-            descendantHandlerExtension]);
+    // Pull out the new StyleSheet/css functions to use for the rest of
+    // this test.
+        const { StyleSheet: newStyleSheet, css: newCss } = StyleSheet.extend([
+            descendantHandlerExtension
+        ]);
 
         const sheet = newStyleSheet.create({
             foo: {
-                '^bar': {
-                    '^baz': {
-                        color: 'orange',
+                "^bar": {
+                    "^baz": {
+                        color: "orange"
                     },
-                    color: 'red',
+                    color: "red"
                 },
-                color: 'blue',
-            },
+                color: "blue"
+            }
         });
 
         newCss(sheet.foo);
@@ -413,34 +420,34 @@ describe('StyleSheet.extend', () => {
             assert.equal(styleTags.length, 1);
             const styles = getSheetText(styleTags[0].sheet);
 
-            assert.notInclude(styles, '^bar');
-            assert.include(styles, '.bar .foo');
-            assert.include(styles, '.baz .bar .foo');
-            assert.include(styles, 'color: red');
-            assert.include(styles, 'color: blue');
-            assert.include(styles, 'color: orange');
+            assert.notInclude(styles, "^bar");
+            assert.include(styles, ".bar .foo");
+            assert.include(styles, ".baz .bar .foo");
+            assert.include(styles, "color: red");
+            assert.include(styles, "color: blue");
+            assert.include(styles, "color: orange");
 
             done();
         });
     });
 });
 
-describe('StyleSheetServer.renderStatic', () => {
+describe("StyleSheetServer.renderStatic", () => {
     const sheet = StyleSheet.create({
         red: {
-            color: 'red',
+            color: "red"
         },
 
         blue: {
-            color: 'blue',
+            color: "blue"
         },
 
         green: {
-            color: 'green',
-        },
+            color: "green"
+        }
     });
 
-    it('returns the correct data', () => {
+    it("returns the correct data", () => {
         const render = () => {
             css(sheet.red);
             css(sheet.blue);
@@ -461,7 +468,7 @@ describe('StyleSheetServer.renderStatic', () => {
         assert.include(ret.css.renderedClassNames, sheet.blue._name);
     });
 
-    it('succeeds even if a previous renderStatic crashed', () => {
+    it("succeeds even if a previous renderStatic crashed", () => {
         const badRender = () => {
             css(sheet.red);
             css(sheet.blue);
@@ -483,14 +490,14 @@ describe('StyleSheetServer.renderStatic', () => {
 
         assert.include(ret.css.content, `.${sheet.blue._name}{`);
         assert.notInclude(ret.css.content, `.${sheet.red._name}{`);
-        assert.include(ret.css.content, 'color:blue');
-        assert.notInclude(ret.css.content, 'color:red');
+        assert.include(ret.css.content, "color:blue");
+        assert.notInclude(ret.css.content, "color:red");
 
         assert.include(ret.css.renderedClassNames, sheet.blue._name);
         assert.notInclude(ret.css.renderedClassNames, sheet.red._name);
     });
 
-    it('doesn\'t mistakenly return styles if called a second time', () => {
+    it("doesn't mistakenly return styles if called a second time", () => {
         const render = () => {
             css(sheet.red);
             css(sheet.blue);
@@ -509,35 +516,43 @@ describe('StyleSheetServer.renderStatic', () => {
         assert.equal(newRet.css.content, "");
     });
 
-    it('should inject unique font-faces by src', () => {
+    it("should inject unique font-faces by src", () => {
         const fontSheet = StyleSheet.create({
             test: {
-                fontFamily: [{
-                    fontStyle: "normal",
-                    fontWeight: "normal",
-                    fontFamily: "My Font",
-                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
-                }, {
-                    fontStyle: "italic",
-                    fontWeight: "normal",
-                    fontFamily: "My Font",
-                    src: 'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
-                }],
+                fontFamily: [
+                    {
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "My Font",
+                        src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                    },
+                    {
+                        fontStyle: "italic",
+                        fontWeight: "normal",
+                        fontFamily: "My Font",
+                        src:
+              'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
+                    }
+                ]
             },
 
             anotherTest: {
-                fontFamily: [{
-                    fontStyle: "normal",
-                    fontWeight: "normal",
-                    fontFamily: "My Font",
-                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
-                }, {
-                    fontStyle: "normal",
-                    fontWeight: "normal",
-                    fontFamily: "My Other Font",
-                    src: 'url(other-font) format("woff"), url(other-font) format("truetype")',
-                }],
-            },
+                fontFamily: [
+                    {
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "My Font",
+                        src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                    },
+                    {
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "My Other Font",
+                        src:
+              'url(other-font) format("woff"), url(other-font) format("truetype")'
+                    }
+                ]
+            }
         });
 
         const render = () => {
@@ -548,7 +563,7 @@ describe('StyleSheetServer.renderStatic', () => {
 
         const ret = StyleSheetServer.renderStatic(render);
 
-        // 3 unique @font-faces should be added
+    // 3 unique @font-faces should be added
         assert.equal(3, ret.css.content.match(/@font\-face/g).length);
 
         assert.include(ret.css.content, "font-style:normal");
@@ -559,7 +574,7 @@ describe('StyleSheetServer.renderStatic', () => {
     });
 });
 
-describe('StyleSheetTestUtils.suppressStyleInjection', () => {
+describe("StyleSheetTestUtils.suppressStyleInjection", () => {
     beforeEach(() => {
         StyleSheetTestUtils.suppressStyleInjection();
     });
@@ -568,11 +583,11 @@ describe('StyleSheetTestUtils.suppressStyleInjection', () => {
         StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
     });
 
-    it('allows css to be called without requiring a DOM', (done) => {
+    it("allows css to be called without requiring a DOM", done => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
-            },
+                color: "red"
+            }
         });
 
         css(sheet.red);
@@ -580,7 +595,7 @@ describe('StyleSheetTestUtils.suppressStyleInjection', () => {
     });
 });
 
-describe('StyleSheetTestUtils.getBufferedStyles', () => {
+describe("StyleSheetTestUtils.getBufferedStyles", () => {
     beforeEach(() => {
         StyleSheetTestUtils.suppressStyleInjection();
     });
@@ -589,17 +604,17 @@ describe('StyleSheetTestUtils.getBufferedStyles', () => {
         StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
     });
 
-    it('returns injection buffer', () => {
+    it("returns injection buffer", () => {
         const sheet = StyleSheet.create({
             red: {
-                color: 'red',
-            },
+                color: "red"
+            }
         });
         css(sheet.red);
         asap(() => {
             const buffer = StyleSheetTestUtils.getBufferedStyles();
-            assert.include(buffer, 'color:red');
+            assert.include(buffer, "color:red");
             assert.include(buffer, sheet.red._name);
-        })
+        });
     });
 });
